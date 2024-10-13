@@ -1,10 +1,7 @@
 package com.todo.api.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,26 +14,28 @@ import lombok.extern.slf4j.Slf4j;
 @Table(name = "users")
 @Data
 @Entity
-@Slf4j
 public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @NonNull
+    @NotBlank
     @Size(min = 3, max =100)
     private String userName;
 
-    @NonNull
+    @NotNull
     @Email
     private String email;
 
-    @NonNull
+    @NotNull
+    @Size(min = 5, max =50)
     private String passwordHash;
 
-    @Min(12)
-    @Max(100)
+    @Min(value = 12, message = "Age must be at least 12")
+    @Max(value = 100, message = "Age cannot exceed 100")
+    @NotNull
     private int age;
+
 
 }
