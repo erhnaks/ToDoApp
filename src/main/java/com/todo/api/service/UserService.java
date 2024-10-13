@@ -10,6 +10,7 @@ import com.todo.api.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,9 +18,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);  // Correct logger
-
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final UserRepository userRepository;
     private final ToDoRepository toDoRepository;
     private final UserDtoConverter converter;
@@ -49,8 +49,12 @@ public class UserService {
     }
 
     public UserModel saveUser(UserModel user) {
+
+        user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
         return userRepository.save(user);
     }
+
+
     @Transactional
     public void deleteUser(Long userId) {
         if (userId == null) {
