@@ -8,6 +8,7 @@ import com.todo.api.model.UserModel;
 import com.todo.api.repository.ToDoRepository;
 import com.todo.api.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -71,7 +73,7 @@ public class UserService {
 
         // Now delete the user
         userRepository.deleteById(userId);
-        logger.info("User with ID: {} has been deleted", userId);  // Logging userId on delete
+        log.info("User with ID: {} has been deleted", userId);  // Logging userId on delete
     }
 
     @Transactional
