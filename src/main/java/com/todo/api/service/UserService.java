@@ -24,24 +24,18 @@ public class UserService {
     private final ToDoRepository toDoRepository;
     private final UserDtoConverter converter;
 
-    public UserService(UserRepository userRepository,
-                       UserDtoConverter converter,
-                       ToDoRepository toDoRepository) {
+    public UserService(UserRepository userRepository, UserDtoConverter converter, ToDoRepository toDoRepository) {
         this.userRepository = userRepository;
         this.converter = converter;
         this.toDoRepository = toDoRepository;
     }
 
     protected UserModel findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
     }
 
     public List<UserDto> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(converter::convertToUserDto)
-                .collect(Collectors.toList());
+        return userRepository.findAll().stream().map(converter::convertToUserDto).collect(Collectors.toList());
     }
 
     public UserDto getUserById(Long userId) {
@@ -61,9 +55,7 @@ public class UserService {
             throw new IllegalArgumentException("userId cannot be null");
         }
 
-        UserModel userExist = userRepository
-                .findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User does not exist with id: " + userId));
+        UserModel userExist = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User does not exist with id: " + userId));
 
         // Delete ToDo records if any
         List<ToDoModel> todoDtoList = toDoRepository.findTodoByUserId(userId);
@@ -80,5 +72,26 @@ public class UserService {
         // Now delete the user
         userRepository.deleteById(userId);
         logger.info("User with ID: {} has been deleted", userId);  // Logging userId on delete
+    }
+
+    @Transactional
+    public UserModel updateUserByUserId(Long userId, UserModel userModel) {
+
+        UserModel currentUserData = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+
+        if (userModel.getUserName() != null) {
+            currentUserData.setUserName(userModel.getUserName());
+        }
+        if (userModel.getEmail() != null) {
+            currentUserData.setEmail(userModel.getEmail());
+        }
+
+        currentUserData.setAge(userModel.getAge());
+
+        currentUserData.setPasswordHash(passwordEncoder.encode(userModel.getPasswordHash()));
+
+        return userRepository.save(currentUserData);
+
+
     }
 }
